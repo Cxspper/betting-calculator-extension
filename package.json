@@ -1,0 +1,18 @@
+{
+  "name": "betting-calculator-extension",
+  "description": "A simple betting calculator extension for chronium browswers",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.12",
+    "tailwindcss": "^4.1.12",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "daisyui": "^5.0.50"
+  }
+}
