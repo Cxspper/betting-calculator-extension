@@ -1,89 +1,118 @@
-<html data-theme="dracula">
-	<head>
-		<link rel="stylesheet" href="./static/tw.css" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Orbitron:wght@400..900&display=swap"
-			rel="stylesheet"
-		/>
-	</head>
-	<body>
-		<main class="p-4">
-			<div class="">
-				<h1 class="text-xl font-bold mb-4">Sportsbetting <span class="text-primary">Calculators</span></h1>
-				<div class="grid grid-cols-2 gap-2">
-                    <button id="odds-converter-btn" class="btn btn-outline btn-primary btn-sm">Odds Converter Calculator</button>
-                    <button id="vig-btn" class="btn btn-outline btn-primary btn-sm">Vig Calculator</button>
-                    <button id="no-vig-odds-btn" class="btn btn-outline btn-primary btn-sm">No-Vig Fair Odds Calculator</button>
-                    <button id="expected-value-btn" class="btn btn-outline btn-primary btn-sm">Expected Value Calculator</button>
-                </div>
-			</div>
-			<div class="divider"></div>
-			<div>
-				<!-- Odds Converter -->
-				<div id="odds-converter-container" class="hidden">
-					<div class="flex flex-col gap-4">
-						<div class="flex items-center gap-2">
-							<label for="american-odds" class="text-sm w-30">American</label>
-							<input type="number" step="1" id="american-odds" name="american-odds" placeholder="+110"  class="input input-sm">
-						</div>
-						<div class="flex items-center gap-2">
-							<label for="decimal-odds" class="text-sm w-30">Decimal</label>
-							<input type="number" id="decimal-odds" name="decimal-odds" placeholder="2.10" class="input input-sm">
-						</div>
-						<div class="flex items-center gap-2">
-							<label for="fractional-odds" class="text-sm w-30">Fractional</label>
-							<input type="number" id="fractional-odds" name="fractional-odds" placeholder="1.10" class="input input-sm">
-						</div>
-						<div class="flex items-center gap-2">
-							<label for="probability-odds" class="text-sm w-30">Probability %</label>
-							<input type="number" id="probability-odds" name="probability-odds" placeholder="47.62" class="input input-sm">
-						</div>
-						<button id="odds-converter-learn-btn" class="btn btn-outline btn-secondary btn-sm">Learn More</button>
-					</div>
-					<div id="odds-converter-info" class="flex flex-col gap-2 mt-6 hidden">
-						<h3 class="text-md font-bold">How to Convert Sports Betting Odds</h3>
-						<p class="text-sm">Decimal odds are the standard odds format in most countries, and the odds quote the potential payout should the bet win. As an example, if you wager $100 on 2.0 decimal odds and your bet wins, your total payout is $200 (2.0 x $100 = $200). This payout includes your initial stake, so you need to subtract your initial stake ($100) to determine your profit: $200 - $100 = $100 profit. As you can see in the odds converter, 2.0 is equivalent to +100 American odds and 1/1 fractional odds.</p>
-						<p class="text-sm">American odds are the main odds format in the US. Positive figures (e.g. +200, +450) represent total profit should the bet win, assuming the bet size is $100. In other words, betting $100 at +200 odds means that you profit $200 if your bet wins. Negative figures (e.g. -200, -450) represent how much a bettor must wager to win $100 profit. In other words, if a wager is -200 odds, a bettor must place $200 to earn $100 profit. As shown in the odds converter, -200 American odds is equivalent to 1.5 decimal odds and 1/2 fractional odds.</p>
-						<p class="text-sm">Fractional odds are mainly used in the UK, as well as Ireland. This odds format shows the potential profit should the bet win, quoted as a fraction of the stake. As an example, if you bet $100 on 1/2 (or 0.5) fractional odds and your bet wins, you will earn $50 profit (1/2 x $100). As shown in the odds converter, 1/2 is equivalent to -200 American odds and 1.5 decimal odds.</p>
-						<p class="text-sm">The odds converter also calculates the breakeven win probability of a given odd, which can be very useful when evaluating a bet. For example, if you place a bet at +100 odds, then the breakeven win probability is 50%. You should only place this wager if you believe the “true” or “fair” probability of the wager winning is greater than 50%. On the other hand, if you place a bet at +900 odds, then the breakeven win probability is only 10%. You only need to win +900 wagers 1/10 times to breakeven. So if you evaluate a bet as having a 12.5% chance of winning, then this bet is mathematically profitable. The “true” odds are > 10%</p>
-					</div>
-				</div>
-				<!-- No-Vig Fair Odds -->
-				<div id="no-vig-odds-container" class="hidden">
-					<div class="flex flex-col gap-4">
-						<div class="grid grid-cols-3 justify-items-center place-items-center gap-2">
-						<h3 class="text-sm font-bold justify-self-start">Odds</h3>
-						<h3 class="text-sm font-bold">No-Vig %</h3>
-						<h3 class="text-sm font-bold">No-Vig Odds</h3>
-						<input id="oddsOne" type="number" step="1" value="200"  class="input input-sm justify-self-start">
-						<p id="noVigPctOne" class="text-xs font-bold">50.00%</p>
-						<p id="noVigOddsOne" class="text-xs font-bold">+100</p>
-						<input id="oddsTwo" type="number" step="1" value="-110"  class="input input-sm justify-self-start">
-						<p id="noVigPctTwo" class="text-xs font-bold">47.50%</p>
-						<p id="noVigOddsTwo" class="text-xs font-bold">-125</p>
-					</div>
-					<button id="noVigOddsInfoBtn" class="btn btn-outline btn-secondary btn-sm">Learn More</button>
-					</div>
-					<div id="noVigOddsInfo" class="flex flex-col gap-2 mt-6 hidden">
-						<h3 class="text-md font-bold">How to Convert Sports Betting Odds</h3>
-						<p class="text-sm">Decimal odds are the standard odds format in most countries, and the odds quote the potential payout should the bet win. As an example, if you wager $100 on 2.0 decimal odds and your bet wins, your total payout is $200 (2.0 x $100 = $200). This payout includes your initial stake, so you need to subtract your initial stake ($100) to determine your profit: $200 - $100 = $100 profit. As you can see in the odds converter, 2.0 is equivalent to +100 American odds and 1/1 fractional odds.</p>
-						<p class="text-sm">American odds are the main odds format in the US. Positive figures (e.g. +200, +450) represent total profit should the bet win, assuming the bet size is $100. In other words, betting $100 at +200 odds means that you profit $200 if your bet wins. Negative figures (e.g. -200, -450) represent how much a bettor must wager to win $100 profit. In other words, if a wager is -200 odds, a bettor must place $200 to earn $100 profit. As shown in the odds converter, -200 American odds is equivalent to 1.5 decimal odds and 1/2 fractional odds.</p>
-						<p class="text-sm">Fractional odds are mainly used in the UK, as well as Ireland. This odds format shows the potential profit should the bet win, quoted as a fraction of the stake. As an example, if you bet $100 on 1/2 (or 0.5) fractional odds and your bet wins, you will earn $50 profit (1/2 x $100). As shown in the odds converter, 1/2 is equivalent to -200 American odds and 1.5 decimal odds.</p>
-						<p class="text-sm">The odds converter also calculates the breakeven win probability of a given odd, which can be very useful when evaluating a bet. For example, if you place a bet at +100 odds, then the breakeven win probability is 50%. You should only place this wager if you believe the “true” or “fair” probability of the wager winning is greater than 50%. On the other hand, if you place a bet at +900 odds, then the breakeven win probability is only 10%. You only need to win +900 wagers 1/10 times to breakeven. So if you evaluate a bet as having a 12.5% chance of winning, then this bet is mathematically profitable. The “true” odds are > 10%</p>
-					</div>
-				</div>
-				
-				<!-- Vig -->
-				<div id="vig-container"></div>
-				<!-- Expected Value -->
-				<div id="expected-value-container"></div>
-			</div>
-		</main>
-		<script src="./static/odds-converter.js"></script>
-	</body>
-</html>
-
-
 <!-- npx @tailwindcss/cli -i ./src/static/tw.input.css -o ./src/static/tw.css --watch -->
+
+<!doctype html>
+<html lang="en" data-theme="dracula">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./static/tw.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>Sportsbetting Calculators</title>
+  </head>
+  <body class="min-h-screen bg-base-200">
+
+    <div class="container mx-auto max-w-2xl p-4">
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title">Parlay Calculator</h2>
+          <p class="text-sm opacity-70">Enter bankroll and odds. Novig odds are used to calculate bet amount.</p>
+
+          <!-- Bankroll -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text text-xs">Bankroll</span>
+                <span class="label-text-alt  text-xs">USD</span>
+              </label>
+              <input id="bankroll" type="number" inputmode="decimal" placeholder="e.g. 2500" class="input input-bordered" />
+              <label class="label">
+                <span class="label-text-alt text-xs">Used to suggest a default bet amount.</span>
+              </label>
+            </div>
+
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text text-xs">Kelly Multiplier</span>
+              </label>
+              <input id="kellyMultiplier" type="number" inputmode="decimal" placeholder="e.g. 0.25" class="input input-bordered" />
+            </div>
+          </div>
+
+          <div class="divider">Legs</div>
+
+          <div id="legs">
+            <!-- Leg 1 -->
+            <div class="leg grid grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Leg 1 Odds</span></label>
+                <input id="leg1" type="number" inputmode="numeric" placeholder="e.g. -120 or +150" class="input input-bordered" />
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Leg 1 Fair Odds</span></label>
+                <input id="legFair1" type="number" inputmode="numeric" placeholder="e.g. +100 or -170" class="input input-bordered" />
+              </div>
+            </div>
+
+            <!-- Leg 2 -->
+            <div class="leg grid grid-cols-2 gap-4">
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Leg 2 Odds</span></label>
+                <input id="leg2" type="number" inputmode="numeric" placeholder="e.g. -110 or +200" class="input input-bordered" />
+              </div>
+              <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Leg 2 Fair Odds</span></label>
+                <input id="legFair2" type="number" inputmode="numeric" placeholder="e.g. +105 or -220" class="input input-bordered" />
+              </div>
+            </div>
+            <div id="legsAdded"></div>
+          </div>
+
+          <!-- Actions -->
+          <div class="card-actions flex justify-end gap-4 mt-2">
+            <button id="addLeg" class="btn btn-outline btn-primary">Add Leg</button>
+          </div>
+          <div class="card-actions grid grid-cols-2 gap-4 mt-2">
+            <button id="calcBtn" class="btn btn-primary">Calculate</button>
+            <button id="resetBtn" class="btn btn-outline btn-primary">Reset</button>
+          </div>
+
+          <!-- Results -->
+          <div class="mt-4 grid grid-cols-1 gap-4">
+            <div class="stats shadow w-full">
+              <div class="stat">
+                <div class="stat-title">Parlay Decimal Odds</div>
+                <div id="decOdds" class="stat-value text-xl">—</div>
+                <div class="stat-desc">Product of the two legs</div>
+              </div>
+              <div class="stat">
+                <div class="stat-title">Parlay American Odds</div>
+                <div id="amOdds" class="stat-value text-xl">—</div>
+                <div class="stat-desc">Converted from decimal</div>
+              </div>
+            </div>
+
+            <div class="stats shadow w-full">
+              <div class="stat">
+                <div class="stat-title">Bet Amount</div>
+                <div id="betOut" class="stat-value text-xl">—</div>
+                <div class="stat-desc">Editable above</div>
+              </div>
+              <div class="stat">
+                <div class="stat-title">Win Amount</div>
+                <div id="winOut" class="stat-value text-xl">—</div>
+                <div class="stat-desc">Excludes stake</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <script src="./static/odds-converter.js"></script>
+  </body>
+</html>

@@ -1,166 +1,108 @@
-
-const oddsConvertBtn = document.getElementById("odds-converter-btn")
-const noVigOddsBtn = document.getElementById("no-vig-odds-btn")
-
-const oddsConverterContainer = document.getElementById("odds-converter-container")
-const noVigOddsContainer = document.getElementById("no-vig-odds-container")
-
-const oddsConverterLearnBtn = document.getElementById("odds-converter-learn-btn")
-const noVigOddsInfoBtn = document.getElementById("noVigOddsInfoBtn")
-const noVigOddsInfo = document.getElementById("noVigOddsInfo")
-
-const oddsConverterInfo = document.getElementById("odds-converter-info")
-const americanOdds = document.getElementById("american-odds")
-const decimalOdds = document.getElementById("decimal-odds")
-const fractionalOdds = document.getElementById("fractional-odds")
-const probabilityOdds = document.getElementById("probability-odds")
-
-
-const oddsOne = document.getElementById("oddsOne")
-const oddsTwo = document.getElementById("oddsTwo")
-const noVigPctOne = document.getElementById("noVigPctOne")
-const noVigPctTwo = document.getElementById("noVigPctTwo")
-const noVigOddsOne = document.getElementById("noVigOddsOne")
-const noVigOddsTwo = document.getElementById("noVigOddsTwo")
-
-function calculateNoVigFairOdds() {
-    const oddsOneValue = parseFloat(oddsOne.value)
-    const oddsTwoValue = parseFloat(oddsTwo.value)
-    
-    const oddsOneToImplied = decToIp(amToDec(oddsOneValue))
-    const oddsTwoToImplied = decToIp(amToDec(oddsTwoValue))
-
-    const vigPercentageOne = (oddsOneToImplied / (oddsOneToImplied + oddsTwoToImplied))
-    const vigPercentageTwo = (oddsTwoToImplied / (oddsOneToImplied + oddsTwoToImplied))
-    let noVigImpliedOne = 0
-    let noVigImpliedTwo = 0
-    if (vigPercentageOne <= 0.5) {
-        noVigImpliedOne = (100 / vigPercentageOne) - 100
-    }else if(vigPercentageOne > 0.5) {
-        noVigImpliedOne = -100 / ( - 1)
-    }
-
-    if (vigPercentageTwo <= 0.5) {
-        noVigImpliedTwo = (100 / vigPercentageTwo) - 100
-    }else if(vigPercentageTwo > 0.5) {
-        noVigImpliedTwo = -100 * (vigPercentageTwo / (1 - vigPercentageTwo))
-    }
-
-    noVigPctOne.innerText = (vigPercentageOne * 100).toFixed(2)
-    noVigPctTwo.innerText = (vigPercentageTwo * 100).toFixed(2)
-    noVigOddsOne.innerText = noVigImpliedOne.toFixed(2)
-    noVigOddsTwo.innerText = noVigImpliedTwo.toFixed(2)
+function amToDec(am) {
+    if (am === 0 || Number.isNaN(am)) return NaN;
+    return am > 0 ? 1 + (am / 100) : 1 + (100 / Math.abs(am));
+}
+function decToAm(dec) {
+    if (dec <= 1 || Number.isNaN(dec)) return NaN;
+    const profitFactor = dec - 1;
+    return profitFactor >= 1 ? Math.round(profitFactor * 100) : Math.round(-100 / profitFactor);
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    oddsConvertBtn.classList.toggle("btn-outline")
-    noVigOddsBtn.classList.add("btn-outline")
 
-    oddsConverterContainer.classList.toggle("hidden")
-    noVigOddsContainer.classList.add("hidden")
-})
+const $ = (id) => document.getElementById(id)
+const addLegEl = $("addLeg")
+const bankrollEl = $("bankroll");
+const kellyMultiplierEl = $("kellyMultiplier")
+const decOddsEl = $("decOdds")
+const amOddsEl = $("amOdds")
+const betOutEl = $("betOut")
+const winOutEl = $("winOut")
+const calcBtn = $("calcBtn")
+const resetBtn = $("resetBtn")
 
-oddsOne.addEventListener("input", function() {
-    console.log("odds 1 has changed")
-    calculateNoVigFairOdds()
-})
+function addLeg() {
+    const allLegsEl = document.getElementsByClassName('leg');
+    const n = allLegsEl.length + 1;
 
-oddsTwo.addEventListener("input", function() {
-    calculateNoVigFairOdds()
-})
+    const html = `
+        <div class="leg grid grid-cols-2 gap-4">
+            <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Leg ${n} Odds</span></label>
+                <input id="leg${n}" type="number" inputmode="numeric" placeholder="e.g. -110 or +200" class="input input-bordered" />
+            </div>
+            <div class="form-control">
+                <label class="label"><span class="label-text text-xs">Leg ${n} Fair Odds</span></label>
+                <input id="legFair${n}" type="number" inputmode="numeric" placeholder="e.g. +105 or -220" class="input input-bordered" />
+            </div>
+        </div>`;
+    document.getElementById('legsAdded').insertAdjacentHTML('beforeend', html);
+}
 
-oddsConvertBtn.addEventListener("click", function() {
-    oddsConvertBtn.classList.toggle("btn-outline")
-    noVigOddsBtn.classList.add("btn-outline")
+addLegEl.addEventListener('click', addLeg)
 
-    oddsConverterContainer.classList.toggle("hidden")
-    noVigOddsContainer.classList.add("hidden")
-})
+function formatMoney(x) {
+    if (!isFinite(x)) return "—"
+    return "$" + x.toFixed(2);
+}
 
-noVigOddsBtn.addEventListener("click", function() {
-    noVigOddsBtn.classList.toggle("btn-outline")
-    oddsConvertBtn.classList.add("btn-outline")
+function calculate() {
+    const bankroll = parseFloat(bankrollEl.value)
+    const kellyMultiplier = parseFloat(kellyMultiplierEl.value)
 
-    noVigOddsContainer.classList.toggle("hidden")
-    oddsConverterContainer.classList.add("hidden")
+    const allLegsEl = document.getElementsByClassName('leg')
+    const numberOfLegs = allLegsEl.length
 
-    calculateNoVigFairOdds()
+    const data = []
+    for (let i = 1; i <= numberOfLegs; i++) {
+        const odds = parseFloat(document.getElementById('leg' + i).value)
+        const fairOdds = parseFloat(document.getElementById('legFair' + i).value)
+        const decimalOdds = amToDec(odds)
+        const decimalFairOdds = amToDec(fairOdds)
+        const probabilityFairOdds = 1 / decimalFairOdds
 
-})
+        if (!isFinite(decimalOdds) || !isFinite(1 / decimalFairOdds)) {
+            continue;
+        }
+        data.push({
+            decimal: decimalOdds,
+            probabilityFairOdds: probabilityFairOdds
+        })
+    }
 
-oddsConverterLearnBtn.addEventListener("click", function() {
-    oddsConverterInfo.classList.toggle("hidden")
-    oddsConverterLearnBtn.classList.toggle("btn-outline")
-})
+    let  parlayDecimal = 1
+    let parlayFairProbability = 1
+    for (let i = 0; i < data.length; i++) {
+        parlayDecimal *= (data[i].decimal)
+        parlayFairProbability *= (data[i].probabilityFairOdds)
+    }
 
-noVigOddsInfoBtn.addEventListener("click", function() {
-    noVigOddsInfo.classList.toggle("hidden")
-    noVigOddsInfoBtn.classList.toggle("btn-outline")
-})
+    const b = parlayDecimal - 1;
+    const p = parlayFairProbability;
+    const kellyFraction = (b * p - (1 - p)) / b;
+    const stake = bankroll * kellyFraction * kellyMultiplier
+    const parlayAmerican = decToAm(parlayDecimal)
+    const win = isFinite(stake) ? stake * (parlayDecimal - 1): NaN;
 
+    decOddsEl.textContent = isFinite(parlayDecimal) ? parlayDecimal.toFixed(4) : "—";
+    amOddsEl.textContent = isFinite(parlayAmerican) ? (parlayAmerican > 0 ? `+${parlayAmerican}` : `${parlayAmerican}`) : "—";
+    betOutEl.textContent = formatMoney(stake);
+    winOutEl.textContent = formatMoney(win);
+}
 
-americanOdds.addEventListener("input", function() {
-    const am = parseFloat(americanOdds.value)
+calcBtn.addEventListener("click", calculate);
 
-    decimalOdds.value = amToDec(am).toFixed(2)
-    fractionalOdds.value = decToFrac(amToDec(am)).toFixed(2)
-    probabilityOdds.value = (decToIp(amToDec(am)) * 100 ).toFixed(2)
+resetBtn.addEventListener("click", () => {
+    document.querySelectorAll("#legsAdded input, #bankroll, #kellyMultiplier, .input")
+        .forEach(el => el.value = "");
+    decOddsEl.textContent = "—";
+    amOddsEl.textContent = "—";
+    betOutEl.textContent = "—";
+    winOutEl.textContent = "—";
 });
 
-decimalOdds.addEventListener("input", function() {
-    const dec = parseFloat(decimalOdds.value)
-
-    americanOdds.value = decToAm(dec).toFixed(2)
-    fractionalOdds.value = decToFrac(dec).toFixed(2)
-    probabilityOdds.value = (decToIp(dec) * 100).toFixed(2)
-})
-
-fractionalOdds.addEventListener("input", function() {
-    const frac = parseFloat(fractionalOdds.value)
-
-    decimalOdds.value = fracToDec(frac).toFixed(2)
-    americanOdds.value = decToAm(fracToDec(frac)).toFixed(2)
-    probabilityOdds.value = (decToIp(fracToDec(frac)) * 100 ).toFixed(2)    
-})
-
-probabilityOdds.addEventListener("input", function() {
-    const ip = parseFloat(probabilityOdds.value)
-
-    decimalOdds.value = ipToDec(ip).toFixed(2)
-    americanOdds.value = decToAm(ipToDec(ip)).toFixed(2)
-    fractionalOdds.value = decToFrac(ipToDec(ip)).toFixed(2)    
-})
-
-
-
-function amToDec(am) {
-    if (am > 0) {
-        return (1 + am / 100)
-    }else {
-        return (1 + 100 / Math.abs(am))
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.matches("input")) {
+        e.preventDefault();
+        calculate();
     }
-}
-
-function fracToDec(frac) {
-    return (frac + 1)
-}
-
-function ipToDec(ip) {
-    return 100 / ip
-}
-
-function decToAm(dec) {
-    if (dec >= 2) {
-        return (100 * (dec - 1))
-    }else {
-        return (-(100/(dec - 1)))
-    }
-}
-
-function decToFrac(dec) {
-    return (dec - 1)
-}
-
-function decToIp(dec) {
-    return 1 / dec
-}
+});
