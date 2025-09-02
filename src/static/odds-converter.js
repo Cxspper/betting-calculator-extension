@@ -8,7 +8,6 @@ function decToAm(dec) {
     return profitFactor >= 1 ? Math.round(profitFactor * 100) : Math.round(-100 / profitFactor);
 }
 
-
 const $ = (id) => document.getElementById(id)
 const addLegEl = $("addLeg")
 const bankrollEl = $("bankroll");
@@ -20,12 +19,86 @@ const winOutEl = $("winOut")
 const calcBtn = $("calcBtn")
 const resetBtn = $("resetBtn")
 
+const STORAGE_KEY = 'parlay_state';
+
+function getStateFromDOM() {
+    const legs = Array.from(document.querySelectorAll('.leg')).map((row, idx) => {
+        const n = idx + 1;
+        return {
+        american: parseFloat(document.getElementById('leg' + n)?.value) || '',
+        fairOdds: parseFloat(document.getElementById('legFair' + n)?.value) || ''
+        };
+    });
+    return {
+        bankroll: parseFloat(bankrollEl.value) || '',
+        kellyMultiplier: parseFloat(kellyMultiplierEl.value) || '',
+        legs
+    };
+}
+
+function setStateToDOM(state) {
+    if (!state) return;
+
+    const existing = document.getElementsByClassName('leg').length;
+    for (let i = existing; i < (state.legs?.length || 0); i++) addLeg();
+
+    if (state.bankroll !== '') bankrollEl.value = state.bankroll;
+    if (state.kellyMultiplier !== '') kellyMultiplierEl.value = state.kellyMultiplier;
+
+    (state.legs || []).forEach((leg, idx) => {
+        const n = idx + 1;
+        const am = document.getElementById('leg' + n);
+        const fo = document.getElementById('legFair' + n);
+        if (am && leg.american !== '') am.value = leg.american;
+        if (fo && leg.fairOdds !== '')  fo.value = leg.fairOdds;
+    });
+}
+
+function saveState(state) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+        console.error('Failed to save:', e);
+    }
+}
+
+function loadState() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch {
+        return {};
+    }
+}
+
+function debounce(fn, ms = 150) {
+    let t;
+    return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn(...args), ms);
+    };
+}
+
+const saveStateDebounced = debounce(() => saveState(getStateFromDOM()), 200);
+
+document.addEventListener('DOMContentLoaded', () => {
+    setStateToDOM(loadState());
+});
+document.addEventListener('input', (e) => {
+    if (e.target.matches('#bankroll, #kellyMultiplier, [id^="leg"], [id^="legFair"]')) {
+        saveStateDebounced();
+    }
+});
+addLegEl.addEventListener('click', () => {
+    addLeg();
+    saveStateDebounced();
+});
+
 function addLeg() {
     const allLegsEl = document.getElementsByClassName('leg');
     const n = allLegsEl.length + 1;
 
     const html = `
-        <div class="leg grid grid-cols-2 gap-4">
+        <div class="leg grid grid-cols-2 gap-4 my-1">
             <div class="form-control">
                 <label class="label"><span class="label-text text-xs">Leg ${n} Odds</span></label>
                 <input id="leg${n}" type="number" inputmode="numeric" placeholder="e.g. -110 or +200" class="input input-bordered" />
@@ -69,6 +142,7 @@ function calculate() {
         })
     }
 
+
     let  parlayDecimal = 1
     let parlayFairProbability = 1
     for (let i = 0; i < data.length; i++) {
@@ -83,7 +157,6 @@ function calculate() {
     const parlayAmerican = decToAm(parlayDecimal)
     const win = isFinite(stake) ? stake * (parlayDecimal - 1): NaN;
 
-    decOddsEl.textContent = isFinite(parlayDecimal) ? parlayDecimal.toFixed(4) : "—";
     amOddsEl.textContent = isFinite(parlayAmerican) ? (parlayAmerican > 0 ? `+${parlayAmerican}` : `${parlayAmerican}`) : "—";
     betOutEl.textContent = formatMoney(stake);
     winOutEl.textContent = formatMoney(win);
@@ -92,9 +165,11 @@ function calculate() {
 calcBtn.addEventListener("click", calculate);
 
 resetBtn.addEventListener("click", () => {
-    document.querySelectorAll("#legsAdded input, #bankroll, #kellyMultiplier, .input")
-        .forEach(el => el.value = "");
-    decOddsEl.textContent = "—";
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll("#legs input")
+        .forEach(el => el.value = "")
+    document.querySelector('#bankroll').value = 1000
+    document.querySelector('#kellyMultiplier').value = 0.25
     amOddsEl.textContent = "—";
     betOutEl.textContent = "—";
     winOutEl.textContent = "—";

@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Sportsbetting Calculator",
+    "description": "Different calculators for all positive expected value betting to maximize profit",
+    "version": "1.0",
+    "action": {
+        "default_popup": "src/index.html",
+        "default_icon": {
+        "16": "src/static/icon.png",
+        "48": "src/static/icon.png",
+        "128": "src/static/icon.png"
+        }
+    },
+    "icons": {
+        "16": "src/static/icon.png",
+        "48": "src/static/icon.png",
+        "128": "src/static/icon.png"
+    },
+    "permissions": []
+}

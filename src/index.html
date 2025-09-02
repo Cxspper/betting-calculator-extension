@@ -14,13 +14,13 @@
     />
     <title>Sportsbetting Calculators</title>
   </head>
-  <body class="min-h-screen bg-base-200">
+  <body class="min-h-screen bg-base-200" style="min-width: 400px;">
 
-    <div class="container mx-auto max-w-2xl p-4">
-      <div class="card bg-base-100 shadow-xl">
+    <div class="container mx-auto max-w-2xl p-0">
+      <div class="bg-base-100 shadow-xl">
         <div class="card-body">
-          <h2 class="card-title">Parlay Calculator</h2>
-          <p class="text-sm opacity-70">Enter bankroll and odds. Novig odds are used to calculate bet amount.</p>
+          <h2 class="card-title">Parlay <span class="text-primary">Calculator</span></h2>
+          <!-- <p class="text-sm opacity-70">Enter bankroll and odds. Novig odds are used to calculate bet amount.</p> -->
 
           <!-- Bankroll -->
           <div class="grid grid-cols-2 gap-4">
@@ -29,85 +29,74 @@
                 <span class="label-text text-xs">Bankroll</span>
                 <span class="label-text-alt  text-xs">USD</span>
               </label>
-              <input id="bankroll" type="number" inputmode="decimal" placeholder="e.g. 2500" class="input input-bordered" />
-              <label class="label">
+              <input id="bankroll" type="number" inputmode="decimal" value="1000" class="input input-bordered input-sm" />
+              <!-- <label class="label">
                 <span class="label-text-alt text-xs">Used to suggest a default bet amount.</span>
-              </label>
+              </label> -->
             </div>
 
             <div class="form-control">
               <label class="label">
                 <span class="label-text text-xs">Kelly Multiplier</span>
               </label>
-              <input id="kellyMultiplier" type="number" inputmode="decimal" placeholder="e.g. 0.25" class="input input-bordered" />
+              <input id="kellyMultiplier" type="number" inputmode="decimal" value="0.25" class="input input-bordered input-sm" />
             </div>
           </div>
 
-          <div class="divider">Legs</div>
+          <div class="divider text-xs">Legs</div>
 
           <div id="legs">
             <!-- Leg 1 -->
-            <div class="leg grid grid-cols-2 gap-4">
+            <div class="leg grid grid-cols-2 gap-4 mb-1">
               <div class="form-control">
                 <label class="label"><span class="label-text text-xs">Leg 1 Odds</span></label>
-                <input id="leg1" type="number" inputmode="numeric" placeholder="e.g. -120 or +150" class="input input-bordered" />
+                <input id="leg1" type="number" inputmode="numeric" placeholder="e.g. -120 or +150" class="input input-bordered input-sm" />
               </div>
               <div class="form-control">
                 <label class="label"><span class="label-text text-xs">Leg 1 Fair Odds</span></label>
-                <input id="legFair1" type="number" inputmode="numeric" placeholder="e.g. +100 or -170" class="input input-bordered" />
+                <input id="legFair1" type="number" inputmode="numeric" placeholder="e.g. +100 or -170" class="input input-bordered input-sm" />
               </div>
             </div>
 
             <!-- Leg 2 -->
-            <div class="leg grid grid-cols-2 gap-4">
+            <div class="leg grid grid-cols-2 gap-4 my-1">
               <div class="form-control">
                 <label class="label"><span class="label-text text-xs">Leg 2 Odds</span></label>
-                <input id="leg2" type="number" inputmode="numeric" placeholder="e.g. -110 or +200" class="input input-bordered" />
+                <input id="leg2" type="number" inputmode="numeric" placeholder="e.g. -110 or +200" class="input input-bordered input-sm" />
               </div>
               <div class="form-control">
                 <label class="label"><span class="label-text text-xs">Leg 2 Fair Odds</span></label>
-                <input id="legFair2" type="number" inputmode="numeric" placeholder="e.g. +105 or -220" class="input input-bordered" />
+                <input id="legFair2" type="number" inputmode="numeric" placeholder="e.g. +105 or -220" class="input input-bordered input-sm" />
               </div>
             </div>
             <div id="legsAdded"></div>
           </div>
 
           <!-- Actions -->
-          <div class="card-actions flex justify-end gap-4 mt-2">
-            <button id="addLeg" class="btn btn-outline btn-primary">Add Leg</button>
-          </div>
-          <div class="card-actions grid grid-cols-2 gap-4 mt-2">
+          <div class="card-actions grid grid-cols-3 gap-4 mt-2">
             <button id="calcBtn" class="btn btn-primary">Calculate</button>
             <button id="resetBtn" class="btn btn-outline btn-primary">Reset</button>
+            <button id="addLeg" class="btn btn-outline btn-primary">Add Leg</button>
           </div>
+          
 
           <!-- Results -->
-          <div class="mt-4 grid grid-cols-1 gap-4">
-            <div class="stats shadow w-full">
-              <div class="stat">
-                <div class="stat-title">Parlay Decimal Odds</div>
-                <div id="decOdds" class="stat-value text-xl">—</div>
-                <div class="stat-desc">Product of the two legs</div>
-              </div>
-              <div class="stat">
-                <div class="stat-title">Parlay American Odds</div>
+          <div id="results" class="mt-4">
+            <div class="stats grid grid-cols-3 gap-4 w-full">
+              <div class="p-2">
+                <div class="stat-title text-xs">Parlay Odds</div>
                 <div id="amOdds" class="stat-value text-xl">—</div>
-                <div class="stat-desc">Converted from decimal</div>
+              </div>
+              <div class="p-2">
+                <div class="stat-title text-xs">Bet Amount</div>
+                <div id="betOut" class="stat-value text-xl">—</div>
+              </div>
+              <div class="p-2">
+                <div class="stat-title text-xs">Win Amount</div>
+                <div id="winOut" class="stat-value text-xl">—</div>
               </div>
             </div>
 
-            <div class="stats shadow w-full">
-              <div class="stat">
-                <div class="stat-title">Bet Amount</div>
-                <div id="betOut" class="stat-value text-xl">—</div>
-                <div class="stat-desc">Editable above</div>
-              </div>
-              <div class="stat">
-                <div class="stat-title">Win Amount</div>
-                <div id="winOut" class="stat-value text-xl">—</div>
-                <div class="stat-desc">Excludes stake</div>
-              </div>
-            </div>
           </div>
 
         </div>
